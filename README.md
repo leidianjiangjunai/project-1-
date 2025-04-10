@@ -1,105 +1,127 @@
-# 1. 准备工作
+# 智能金融数据查询系统
+## 🌐 项目简介
+基于深度求索大模型的智能金融数据查询系统，采用分层架构设计，具备语义缓存和异步执行能力。
 
-## 1.1 准备数据集
+## 🚀 核心特性
 
-本项目使用ImageNet数据集进行训练，用户需自行准备ImageNet数据集，并将其放置在`data/`目录下。数据集的目录结构应如下所示：
+- **智能路由**：LLM驱动的动态决策引擎
+- **三级校验**：语法/业务规则/数据存在性验证
+- **语义缓存**：FAISS向量数据库支持相似查询匹配
+- **异步架构**：12线程并发处理，响应延迟<500ms
+- **风控系统**：输入过滤和异常流量检测
 
-```
-data/
-├── train/
-│   ├── n01440764/
-│   │   ├── n01440764_10026.JPEG
-│   │   ├── n01440764_10027.JPEG
-│   │   └── ...
+## 📦 项目结构
 
-
-├── val/
-│   ├── ILSVRC2012_val_00000001.JPEG
-│   ├── ILSVRC2012_val_00000002.JPEG
-│   └── ...
-```
-
-## 1.2 准备预训练模型
-
-本项目使用ResNet50作为骨干网络，用户需自行下载ResNet50的预训练模型，并将其放置在`models/`目录下。预训练模型的文件名应为`resnet50.pdparams`。
-
-## 1.3 安装依赖
-
-本项目依赖于PaddlePaddle、PaddleX、NVIDIA TensorRT等库，用户需自行安装这些依赖。具体安装方法请参考PaddlePaddle和PaddleX的官方文档。
-
-# 2. 模型训练
-
-## 2.1 训练脚本
-
-训练脚本位于`scripts/train.py`，用户可以通过修改该脚本来调整训练参数。以下是一个示例训练命令：
-
-```
-python scripts/train.py --data-path data/ --pretrained-model models/resnet50.pdparams --save-path models/
-```
-
-## 2.2 训练参数
-
-训练脚本支持以下参数：
-
-- `--data-path`：数据集路径，默认为`data/`。
-- `--pretrained-model`：预训练模型路径，默认为`models/resnet50.pdparams`。
-- `--save-path`：模型保存路径，默认为`models/`。
-
-# 3. 模型导出
-
-## 3.1 ONNX模型导出
-
-ONNX模型导出脚本位于`scripts/export_onnx.py`，用户可以通过修改该脚本来调整导出参数。以下是一个示例导出命令：
-
-```
-python scripts/export_onnx.py --model-path models/resnet50.pdparams --save-path models/resnet50.onnx
-```
-
-## 3.2 ONNX模型参数
-
-ONNX模型导出脚本支持以下参数：
-
-- `--model-path`：模型路径，默认为`models/resnet50.pdparams`。
-
-- `--save-path`：模型保存路径，默认为`models/resnet50.onnx`。
-
-# 4. TensorRT引擎构建
-
-## 4.1 TensorRT引擎构建
-
-TensorRT引擎构建脚本位于`scripts/build_trt.py`，用户可以通过修改该脚本来调整构建参数。以下是一个示例构建命令：
-
-```
-python scripts/build_trt.py --onnx-path models/resnet50.onnx --save-path models/resnet50.trt
-```
-
-## 4.2 TensorRT引擎参数
-
-TensorRT引擎构建脚本支持以下参数：
-
-- `--onnx-path`：ONNX模型路径，默认为`models/resnet50.onnx`。
-
-- `--save-path`：引擎保存路径，默认为`models/resnet50.trt`。
-
-# 5. 推理测试
-
-## 5.1 推理测试脚本
-
-推理测试脚本位于`scripts/inference.py`，用户可以通过修改该脚本来调整推理参数。以下是一个示例推理命令：
-
-```
-python scripts/inference.py --engine-path models/resnet50.trt --image-path data/val/ILSVRC2012_val_00000001.JPEG
-```
-
-## 5.2 推理参数
-
-推理测试脚本支持以下参数：
-
-- `--engine-path`：TensorRT引擎路径，默认为`models/resnet50.trt`。
-
-- `--image-path`：测试图片路径，默认为`data/val/ILSVRC2012_val_00000001.JPEG`。
+.
+├── api/               # API接口层
+├── agents/            # 决策代理层
+├── config/            # 配置中心
+├── infrastructure/    # 基础设施
+├── services/          # 核心服务
+├── tools/             # 功能工具集
+└── tests/             # 测试套件
 
 
-# 6. 总结
+## 🛠️ 快速开始
 
-本项目实现了基于ResNet50的图像分类模型，并提供了从数据准备、模型训练、模型导出、TensorRT引擎构建到推理测试的全流程。用户可以根据自己的需求，修改训练参数、导出参数、构建参数和推理参数，以适应不同的应用场景。
+### 环境准备
+
+# 创建环境文件
+cp .env.example .env
+# 编辑.env文件配置API密钥
+
+
+### 初始化系统
+
+# 加载初始数据
+python scripts/init_vector_store.py
+
+# 启动服务
+uvicorn api.app:app --reload --port 8000
+
+
+## ⚙️ 配置说明
+
+`.env` 文件示例：
+
+
+LLM_PROVIDER=deepseek
+DEEPSEEK_API_KEY=your_api_key_here
+CACHE_THRESHOLD=0.85
+MAX_CONCURRENT=12
+VECTOR_STORE=faiss
+
+
+## 📡 API文档
+
+### 数据查询接口
+
+**请求示例**：
+
+curl -X POST "http://localhost:8000/query" \
+-H "Content-Type: application/json" \
+-d '{
+  "query": "AAPL当前股价",
+  "session_id": "user_001"
+}'
+
+
+**成功响应**：
+
+{
+  "status": "success",
+  "data": {
+    "symbol": "AAPL",
+    "price": 182.52,
+    "currency": "USD",
+    "timestamp": "2024-03-20T09:30:15Z"
+  },
+  "cache_used": false
+}
+
+
+## 🐳 Docker部署
+
+# 构建镜像
+docker build -t finbot .
+
+# 运行容器
+docker run -p 8000:8000 --env-file .env finbot
+
+
+## ✅ 测试验证
+
+# 运行单元测试
+pytest tests/ -v
+
+# 冒烟测试
+python tests/smoke_test.py
+
+## 🤝 贡献指南
+
+1. Fork项目仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交修改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送分支 (`git push origin feature/AmazingFeature`)
+5. 发起Pull Request
+
+## 📝 已知问题
+
+- [ ] 异步数据库连接池待实现
+- [ ] 分布式锁机制需要补充
+- [ ] 请求限流中间件开发中
+- [ ] 风控系统待完善
+
+## 📄 联系方式
+
+如有任何问题或建议，请通过项目issue页面与我们联系。
+
+
+请注意，本README文件已删除个人可识别信息（PII）和某些网站的超链接，以确保内容的干净和安全。
+
+以下关键文件需自行创建：
+1. `requirements.txt` - Python依赖清单
+2. `.env.example` - 环境配置模板
+3. `LICENSE` - 许可证文件
+4. `tests/`目录 - 单元测试用例
+5. `scripts/init_vector_store.py` - 向量库初始化脚本
